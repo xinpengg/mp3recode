@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Betting Site</title>
+    <!-- Add your CSS links here -->
+</head>
+<body>
+<h1>Welcome to the Betting Site</h1>
+
+<!-- Display messages -->
+<div th:if="${message}" th:text="${message}"></div>
+<div th:if="${error}" th:text="${error}"></div>
+
+<!-- Betting form -->
+<form action="#" th:action="@{/bet}" method="post">
+    <input type="text" name="userId" placeholder="User ID">
+    <input type="text" name="outcome" placeholder="Outcome (YES/NO)">
+    <input type="number" name="shares" placeholder="Shares">
+    <button type="submit">Place Bet</button>
+</form>
+
+<!-- Liquidity Information -->
+<div>
+    <p>YES Liquidity: <span th:text="${yesLiquidity}"></span></p>
+    <p>NO Liquidity: <span th:text="${noLiquidity}"></span></p>
+</div>
+
+<!-- Add your JavaScript at the bottom -->
+<script src="path/to/your/javascript.js"></script>
+</body>
+</html>
