@@ -1,27 +1,28 @@
 package com.xinpeng.mp3projectfr;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Service
 public class UserService {
-    private final List<User> users;
+    private final UserRepository userRepository;
 
-    public UserService() {
-        this.users = new ArrayList<>();
+    @Autowired
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public void register(User user) {
-        users.add(user);
+        userRepository.save(user);
     }
 
-    public User findUser(String username) {
-        for (User user : users) {
-            if (user.getId().equals(username)) {
-                return user;
-            }
-        }
-        return null;
+    public boolean existsById(String id) {
+        return userRepository.existsById(id);
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }

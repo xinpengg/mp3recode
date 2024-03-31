@@ -22,8 +22,11 @@ public class RegistrationController {
         User user = new User(username, balance);
         userService.register(user); // Register the user
         model.addAttribute("user", user);
-        return "redirect:/"; // Redirect to the home page or another confirmation page
+
+        System.out.println("All users after registration: " + userService.getAllUsers());
+        return "redirect:/";
     }
+
 
     @GetMapping("/register")
     public String showRegistrationForm() {
