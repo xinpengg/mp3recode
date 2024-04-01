@@ -20,10 +20,11 @@ public class User {
     @Column(name = "quantity")
     private Map<String, Integer> shares;
 
-    public User(String id, double balance) {
+    public User(String id, String password) {
         this.id = id;
-        this.balance = balance;
-        this.shares = new HashMap<>();
+        this.balance = 1000;
+        this.password = password;
+
     }
 
     public User() {
@@ -45,7 +46,7 @@ public class User {
     }
 
     public int getShares(String outcome) {
-        return shares.getOrDefault(outcome, 0);
+            return shares.getOrDefault(outcome, 0);
     }
 
     public String getId() {
@@ -81,4 +82,6 @@ public class User {
         return password;
 
     }
+
+
 }

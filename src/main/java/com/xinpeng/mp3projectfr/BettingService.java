@@ -38,9 +38,9 @@ super (someValue, someValue);
         this.users = new HashMap<>();
     }
 
-    public void registerUser(String userId, double initialBalance) {
-        users.put(userId, new User(userId, initialBalance));
-        System.out.println("User " + userId + " registered with balance: " + initialBalance);
+    public void registerUser(String userId, String paswsword) {
+        users.put(userId, new User(userId, paswsword));
+        System.out.println("User " + userId + " registered with password: " + paswsword);
     }
     public void sellShares(String userId, String outcome, int shares) {
         outcome = outcome.toUpperCase();
@@ -69,7 +69,7 @@ super (someValue, someValue);
     }
 
 
-    public void buyShares(String userId, String outcome, int shares) {
+    public void buyShares(String userId, String outcome, double amount) {
         outcome = outcome.toUpperCase();
         User user = userService.findUserById(userId); // Retrieve user from UserService
 
@@ -78,12 +78,23 @@ super (someValue, someValue);
             return;
         }
 
-        System.out.println("User " + userId + " is buying " + shares + " " + outcome + " shares.");
+        // Calculate the number of shares that can be bought with the specified amount
+        double pricePerShare = outcome.equals("YES") ? getYesPrice() : getNoPrice();
+        int shares = (int)(amount / pricePerShare); // This calculates the maximum number of whole shares
+
+        System.out.println("User " + userId + " is buying " + shares + " " + outcome + " shares for " + amount + ".");
 
         double cost = super.buyShares(outcome, shares);
         if (cost <= 0 || user.getBalance() < cost) {
             System.out.println("Transaction failed. Invalid purchase or insufficient balance.");
             return;
+        }
+
+        // Here, you might want to check if the cost is higher than the amount due to rounding of shares
+        if (cost > amount) {
+            System.out.println("User does not have enough money for " + shares + " shares. Adjusting the number of shares down.");
+            shares = (int)(amount / pricePerShare); // Adjust the number of shares down
+            cost = super.buyShares(outcome, shares); // Recalculate cost with the adjusted number of shares
         }
 
         user.setBalance(user.getBalance() - cost);
@@ -92,7 +103,7 @@ super (someValue, someValue);
         System.out.println("User " + userId + " bought " + shares + " " + outcome + " shares for " + cost);
     }
 
-	protected void setUserService(UserService service) {
+    protected void setUserService(UserService service) {
         	        this.userService = service;
         	    }
     public double calculateCost(String outcome, int shares) {

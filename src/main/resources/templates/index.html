@@ -2,43 +2,49 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Betting Site</title>
-    <!-- Add your CSS links here -->
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-<h1>Welcome to the Betting Site</h1>
+<div class="container mt-5">
+    <h1>Welcome to the Betting Site</h1>
 
-<!-- Display messages -->
-<div th:if="${message}" th:text="${message}"></div>
-<div th:if="${error}" th:text="${error}"></div>
+    <!-- Display messages -->
+    <div th:if="${message}" th:text="${message}" class="alert alert-success"></div>
+    <div th:if="${error}" th:text="${error}" class="alert alert-danger"></div>
 
-<!-- Display user balance -->
-<div th:if="${userBalance}" >
-    <p>Your Balance: <span th:text="${userBalance}"></span></p>
+    <!-- Display user balance -->
+    <div th:if="${userBalance}" >
+        <p>Your Balance: <span th:text="${userBalance}"></span></p>
+    </div>
+
+    <!-- Betting form -->
+    <form action="#" th:action="@{/bet}" method="post" class="border p-4">
+        <input type="hidden" name="userId" th:value="${userId}">
+
+        <div class="form-group">
+            <div class="d-flex justify-content-between">
+                <label class="btn btn-outline-success w-100 mr-2">
+                    <input type="radio" name="outcome" id="yesOutcome" value="YES" autocomplete="off"> Bet YES <span th:text="${yesPrice}"></span>
+                </label>
+                <label class="btn btn-outline-danger w-100 ml-2">
+                    <input type="radio" name="outcome" id="noOutcome" value="NO" autocomplete="off"> Bet NO <span th:text="${noPrice}"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="amount">Amount</label>
+            <input type="number" class="form-control" id="amount" name="amount" placeholder="$100.00" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Place Bet</button>
+    </form>
 </div>
 
-<!-- Betting buttons -->
-<form action="#" th:action="@{/bet}" method="post">
-    <input type="hidden" name="userId" th:value="${userId}">
-    <div>
-        <button type="submit" name="outcome" value="YES">
-            Bet YES <span th:text="${yesPrice}"></span>
-        </button>
-        <input type="number" name="shares" placeholder="Shares" required>
-    </div>
-    <div>
-        <button type="submit" name="outcome" value="NO">
-            Bet NO <span th:text="${noPrice}"></span>
-        </button>
-    </div>
-</form>
-
-<!-- Liquidity Information -->
-<div>
-    <p>YES Liquidity: <span th:text="${yesLiquidity}"></span></p>
-    <p>NO Liquidity: <span th:text="${noLiquidity}"></span></p>
-</div>
-
-<!-- Add your JavaScript at the bottom -->
-<script src="path/to/your/javascript.js"></script>
+<!-- Bootstrap and other scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

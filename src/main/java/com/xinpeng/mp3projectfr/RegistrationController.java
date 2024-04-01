@@ -21,27 +21,29 @@ public class RegistrationController {
     }
 
     @PostMapping("/register")
-    public String submitRegistrationForm(@RequestParam String username, @RequestParam String password, Model model) {
-        // Set the initial balance to 1000
-        double initialBalance = 1000;
+    public String submitRegistrationForm(@ModelAttribute("user") User user, Model model) {
+        boolean userExists = userService.existsById(user.getId());
+        if (userExists) {
+            model.addAttribute("error", "Username already exists. Choose a different username.");
+            return "register";
+        }
 
-        // Ideally, you should encrypt the password here before saving
-        User newUser = new User(username, initialBalance);
-        newUser.setPassword(password); // Make sure this is a hashed password for security
-        userService.register(newUser);
+        user.setBalance(1000.0);
 
-        // You can add attributes to your model to pass messages or data back to your view
+        userService.register(user);
+
         model.addAttribute("message", "Registration successful!");
 
-        // Redirect to login or another page after successful registration
+        // Redirect to login page after successful registration
         return "redirect:/login";
     }
 
+
     @GetMapping("/register")
-    public String showRegistrationForm() {
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("user", new User());
         return "register";
     }
-
     public static boolean userIsLoggedIn() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

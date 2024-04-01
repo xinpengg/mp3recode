@@ -57,6 +57,19 @@ public class Market {
         yesLiquidity = totalLiquidity * (yesLiquidity / (yesLiquidity + noLiquidity));
         noLiquidity = totalLiquidity * (noLiquidity / (yesLiquidity + noLiquidity));
     }
+    public double getYesPrice() {
+        double yesLiquidity = getYesLiquidity();
+        double noLiquidity = getNoLiquidity();
+        double totalLiquidity = yesLiquidity + noLiquidity;
+        return yesLiquidity / totalLiquidity;
+    }
+
+    public double getNoPrice() {
+        double yesLiquidity = getYesLiquidity();
+        double noLiquidity = getNoLiquidity();
+        double totalLiquidity = yesLiquidity + noLiquidity;
+        return noLiquidity / totalLiquidity;
+    }
 
 
     public double sellShares(String outcome, int shares) {
