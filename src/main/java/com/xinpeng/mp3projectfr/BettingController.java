@@ -22,7 +22,6 @@ public class BettingController {
 
     @GetMapping("/")
     public ModelAndView index(HttpSession session) {
-        // Check if user is logged in by looking for "user" attribute in session
         if (session.getAttribute("user") != null) {
             ModelAndView modelAndView = new ModelAndView("index");
             double balance = ((User) session.getAttribute("user")).getBalance();

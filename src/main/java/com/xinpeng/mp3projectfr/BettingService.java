@@ -6,7 +6,7 @@ import java.util.Map;
 @Service
 public class BettingService extends Market {
     private Market market;
-    private Map<String, User> users;
+    public Map<String, User> users;
 
     private   UserService userService;
 
@@ -21,7 +21,6 @@ public class BettingService extends Market {
 
     }
 
-    // Constructor that doesn't directly initialize userService, calls another constructor that does
     public BettingService(int someValue) {
 super (someValue, someValue);
         this.users = new HashMap<>();
@@ -148,30 +147,7 @@ super (someValue, someValue);
     }
 
 
-    public void resolveBet(String winningOutcome) {
-        winningOutcome = winningOutcome.toUpperCase();
-        String losingOutcome = winningOutcome.equals("YES") ? "NO" : "YES";
 
-        for (User user : users.values()) {
-            int winningShares = user.getShares(winningOutcome);
-            int losingShares = user.getShares(winningOutcome.equals("YES") ? "NO" : "YES");
-
-            double profit = winningShares * 1.0;
-            double loss = losingShares * 1.0;
-            user.setBalance(user.getBalance() + profit);
-
-            if (winningShares > 0) {
-                System.out.println("User " + user.getId() + " won " + profit + " from " + winningShares + " " + winningOutcome + " shares.");
-            }
-            if (losingShares > 0) {
-                user.setBalance(user.getBalance() - loss);
-                System.out.println("User " + user.getId() + " lost " + loss + " from " + losingOutcome + " shares.");
-            }
-
-            user.removeShares("YES", user.getShares("YES"));
-            user.removeShares("NO", user.getShares("NO"));
-        }
-    }
 
 
     public void printTotalShares(String userId) {

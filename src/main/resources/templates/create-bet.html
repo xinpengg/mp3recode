@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Custom Bet</title>
+    <!-- Include your stylesheets here -->
+</head>
+<body>
+<div class="container">
+    <h2>Create Custom Bet</h2>
+    <form th:action="@{/custombet/create}" th:object="${bet}" method="post">
+        <div class="form-group">
+            <label for="name">Bet Name:</label>
+            <input type="text" id="name" name="name" th:field="*{name}" required>
+        </div>
+        <div class="form-group">
+            <label for="outcome">Outcome:</label>
+            <input type="text" id="outcome" name="outcome" th:field="*{outcome}" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" th:field="*{description}" required></textarea>
+        </div>
+        <button type="submit">Create Bet</button>
+    </form>
+</div>
+</body>
+</html>
