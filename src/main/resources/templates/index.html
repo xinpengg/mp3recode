@@ -4,10 +4,25 @@
     <title>Betting Site</title>
     <!-- Bootstrap CSS CDN -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script>
+        function updatePlaceholder() {
+            var transactionType = document.querySelector('input[name="transactionType"]:checked').value;
+            var amountInput = document.getElementById('amount');
+            if (transactionType === 'SELL') {
+                amountInput.placeholder = 'Shares';
+            } else {
+                amountInput.placeholder = '$100.00';
+            }
+        }
+    </script>
 </head>
 <body>
 <div class="container mt-5">
-    <h1>Welcome to the Betting Site</h1>
+    <h1>
+        <img src="logo.jpg" alt="Logo" style="height:50px;"> <!-- Replace 'logo.png' with the path to your logo image -->
+        HolmerMarkets
+    </h1>
+
 
     <!-- Display messages -->
     <div th:if="${message}" th:text="${message}" class="alert alert-success"></div>
@@ -18,6 +33,14 @@
         <p>$HOLMERS: <span th:text="${balance}"></span></p>
     </div>
 
+    <!-- Display user shares -->
+    <div th:if="${yesShares}">
+        <p>YES Shares: <span th:text="${yesShares}"></span></p>
+    </div>
+    <div th:if="${noShares}">
+        <p>NO Shares: <span th:text="${noShares}"></span></p>
+    </div>
+
     <!-- Betting Form -->
     <form th:action="@{/bet}" method="post" class="border p-4">
         <!-- Buy/Sell Options -->
@@ -25,10 +48,10 @@
             <label>Transaction Type</label>
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
                 <label class="btn btn-outline-primary">
-                    <input type="radio" name="transactionType" id="buyOption" value="BUY"> BUY
+                    <input type="radio" name="transactionType" id="buyOption" value="BUY" onclick="updatePlaceholder()"> BUY
                 </label>
                 <label class="btn btn-outline-secondary">
-                    <input type="radio" name="transactionType" id="sellOption" value="SELL"> SELL
+                    <input type="radio" name="transactionType" id="sellOption" value="SELL" onclick="updatePlaceholder()"> SELL
                 </label>
             </div>
         </div>

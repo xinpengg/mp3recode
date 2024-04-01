@@ -32,6 +32,8 @@ public class BettingController {
             double noPrice = bettingService.getNoPrice();
             modelAndView.addObject("yesPrice", yesPrice);
             modelAndView.addObject("noPrice", noPrice);
+            modelAndView.addObject("yesShares", ((User) session.getAttribute("user")).getShares("YES"));
+            modelAndView.addObject("noShares", ((User) session.getAttribute("user")).getShares("NO"));
             modelAndView.addObject("yesLiquidity", bettingService.getYesLiquidity());
             modelAndView.addObject("noLiquidity", bettingService.getNoLiquidity());
             return modelAndView;

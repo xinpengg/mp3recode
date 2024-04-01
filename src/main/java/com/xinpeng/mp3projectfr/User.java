@@ -14,17 +14,16 @@ public class User {
     private double balance;
     private String password;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_shares", joinColumns = @JoinColumn(name = "user_id"))
     @MapKeyColumn(name = "outcome")
     @Column(name = "quantity")
-    private Map<String, Integer> shares;
+    private Map<String, Integer> shares = new HashMap<>();
 
     public User(String id, String password) {
         this.id = id;
         this.balance = 1000;
         this.password = password;
-
     }
 
     public User() {
@@ -33,11 +32,12 @@ public class User {
     public double getBalance() {
         return balance;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }
 
-        public void setBalance(double balance) {
+    public void setBalance(double balance) {
         this.balance = balance;
     }
 
@@ -46,7 +46,7 @@ public class User {
     }
 
     public int getShares(String outcome) {
-            return shares.getOrDefault(outcome, 0);
+        return shares.getOrDefault(outcome, 0);
     }
 
     public String getId() {
@@ -80,8 +80,5 @@ public class User {
 
     public String getPassword() {
         return password;
-
     }
-
-
 }

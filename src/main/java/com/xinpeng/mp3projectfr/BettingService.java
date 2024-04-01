@@ -42,25 +42,32 @@ super (someValue, someValue);
         users.put(userId, new User(userId, paswsword));
         System.out.println("User " + userId + " registered with password: " + paswsword);
     }
-    public void sellShares(String userId, String outcome, int shares) {
+
+    public void sellShares(String userId, String outcome, double amount) {
         outcome = outcome.toUpperCase();
         User user = userService.findUserById(userId);
-        System.out.println("User " + userId + " is buying " + shares + " " + outcome + " shares.");
 
         if (user == null) {
             System.out.println("Transaction failed. User not found.");
             return;
         }
 
-        double cost = super.sellShares(outcome, shares);
-        if (cost <= 0 || user.getBalance() < cost || user.getTotalShares() < shares) {
-            System.out.println("Transaction failed. Invalid sale or insufficient balance.");
+        int shares = user.getShares(outcome); // Get the total number of shares the user has for the outcome
+
+        if (shares <= 0) {
+            System.out.println("Transaction failed. No shares to sell.");
             return;
         }
+        if (shares >= amount ) {
+            double cost = super.sellShares(outcome, (int) amount); // Sell all the shares
+            user.setBalance(user.getBalance() + cost);
+            user.removeShares(outcome, (int) amount);
+            userService.save(user);
+            System.out.println("User " + userId + " sold " + shares + " " + outcome + " shares for " + cost);
 
-        user.setBalance(user.getBalance() + cost);
-        user.removeShares(outcome, shares);
-        System.out.println("User " + userId + " sold " + shares + " " + outcome + " shares for " + cost);
+        }
+
+
     }
     public User findUserById(String userId) {
         System.out.println("Trying to find user with ID: " + userId);
@@ -78,35 +85,29 @@ super (someValue, someValue);
             return;
         }
 
-        // Calculate the number of shares that can be bought with the specified amount
         double pricePerShare = outcome.equals("YES") ? getYesPrice() : getNoPrice();
-        int shares = (int)(amount / pricePerShare); // This calculates the maximum number of whole shares
+        int shares = 0;
+        double cost = 0;
 
-        System.out.println("User " + userId + " is buying " + shares + " " + outcome + " shares for " + amount + ".");
+        while (cost + pricePerShare <= amount && user.getBalance() - cost >= pricePerShare) {
+            shares++;
+            cost += pricePerShare;
+        }
 
-        double cost = super.buyShares(outcome, shares);
+        System.out.println("User " + userId + " is buying " + shares + " " + outcome + " shares for " + cost + ".");
+
         if (cost <= 0 || user.getBalance() < cost) {
             System.out.println("Transaction failed. Invalid purchase or insufficient balance.");
             return;
         }
 
-        // Here, you might want to check if the cost is higher than the amount due to rounding of shares
-        if (cost > amount) {
-            System.out.println("User does not have enough money for " + shares + " shares. Adjusting the number of shares down.");
-            shares = (int)(amount / pricePerShare);
-            cost = super.buyShares(outcome, shares);
-        }
-
-        // Check if the user will end up with negative capital after buying shares
-        if (user.getBalance() - cost < 0) {
-            System.out.println("Transaction failed. User will end up with negative capital.");
-            return;
-        }
+        super.buyShares(outcome, shares);
 
         user.setBalance(user.getBalance() - cost);
         System.out.println(user.getBalance());
         user.addShares(outcome, shares);
         userService.save(user);
+
         System.out.println("User " + userId + " bought " + shares + " " + outcome + " shares for " + cost);
     }
 
@@ -116,10 +117,10 @@ super (someValue, someValue);
         	    }
     public double calculateCost(String outcome, int shares) {
         outcome = outcome.toUpperCase();
-        double tempYesLiquidity = getYesLiquidity(); // Temporary variables to simulate the transaction
+        double tempYesLiquidity = getYesLiquidity();
         double tempNoLiquidity = getNoLiquidity();
         double cost = 0;
-        double k = tempYesLiquidity * tempNoLiquidity; // Constant product for liquidity
+        double k = tempYesLiquidity * tempNoLiquidity;
 
         for (int i = 0; i < shares; i++) {
             if ("YES".equalsIgnoreCase(outcome)) {
