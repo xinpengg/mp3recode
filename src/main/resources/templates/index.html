@@ -14,30 +14,45 @@
     <div th:if="${error}" th:text="${error}" class="alert alert-danger"></div>
 
     <!-- Display user balance -->
-    <div th:if="${userBalance}" >
-        <p>Your Balance: <span th:text="${userBalance}"></span></p>
+    <div th:if="${balance}">
+        <p>$HOLMERS: <span th:text="${balance}"></span></p>
     </div>
 
-    <!-- Betting form -->
-    <form action="#" th:action="@{/bet}" method="post" class="border p-4">
-        <input type="hidden" name="userId" th:value="${userId}">
-
+    <!-- Betting Form -->
+    <form th:action="@{/bet}" method="post" class="border p-4">
+        <!-- Buy/Sell Options -->
         <div class="form-group">
-            <div class="d-flex justify-content-between">
-                <label class="btn btn-outline-success w-100 mr-2">
-                    <input type="radio" name="outcome" id="yesOutcome" value="YES" autocomplete="off"> Bet YES <span th:text="${yesPrice}"></span>
+            <label>Transaction Type</label>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-outline-primary">
+                    <input type="radio" name="transactionType" id="buyOption" value="BUY"> BUY
                 </label>
-                <label class="btn btn-outline-danger w-100 ml-2">
-                    <input type="radio" name="outcome" id="noOutcome" value="NO" autocomplete="off"> Bet NO <span th:text="${noPrice}"></span>
+                <label class="btn btn-outline-secondary">
+                    <input type="radio" name="transactionType" id="sellOption" value="SELL"> SELL
                 </label>
             </div>
         </div>
 
+        <!-- Outcome Selection -->
+        <div class="form-group">
+            <label>Outcome</label>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-outline-success">
+                    <input type="radio" name="outcome" id="yesOutcome" value="YES"> YES <span th:text="${yesPrice}"></span>
+                </label>
+                <label class="btn btn-outline-danger">
+                    <input type="radio" name="outcome" id="noOutcome" value="NO"> NO <span th:text="${noPrice}"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Amount Input -->
         <div class="form-group">
             <label for="amount">Amount</label>
             <input type="number" class="form-control" id="amount" name="amount" placeholder="$100.00" required>
         </div>
 
+        <!-- Place Bet Button -->
         <button type="submit" class="btn btn-primary w-100">Place Bet</button>
     </form>
 </div>

@@ -26,6 +26,7 @@ public class BettingController {
         if (session.getAttribute("user") != null) {
             ModelAndView modelAndView = new ModelAndView("index");
             double balance = ((User) session.getAttribute("user")).getBalance();
+            System.out.println("Balance: " + balance);
             modelAndView.addObject("balance", balance);
             double yesPrice = bettingService.getYesPrice();
             double noPrice = bettingService.getNoPrice();
@@ -59,25 +60,41 @@ public class BettingController {
             return "redirect:/login";
         }
     }
+    @PostMapping("/sell")
+    public ModelAndView sellShares(@RequestParam String outcome, @RequestParam int shares, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        ModelAndView modelAndView = new ModelAndView("redirect:/");
+
+        if (user == null || !UserService.existsById(user.getId())) {
+            modelAndView.addObject("error", "User must be logged in and registered to sell shares.");
+            return modelAndView;
+        }
+
+        try {
+            bettingService.sellShares(user.getId(), outcome, shares);
+            modelAndView.addObject("message", "Shares sold successfully!");
+        } catch (IllegalArgumentException e) {
+            modelAndView.addObject("error", e.getMessage());
+        }
+
+        return modelAndView;
+    }
+
 
 
     @PostMapping("/bet")
-    public ModelAndView placeBet( @RequestParam String outcome, @RequestParam int amount, HttpSession session) {
+    public ModelAndView placeBet(@RequestParam String transactionType, @RequestParam String outcome, @RequestParam int amount, HttpSession session) {
         User user = (User) session.getAttribute("user");
 
-        System.out.println("Placing bet for user: " + user.getId() + ", outcome: " + outcome + ", amount: " + amount);
-        ModelAndView modelAndView = new ModelAndView( "redirect:/");
-
-
+        System.out.println("Placing bet for user: " + user.getId() + ", transaction type: " + transactionType + ", outcome: " + outcome + ", amount: " + amount);
+        ModelAndView modelAndView = new ModelAndView("redirect:/");
 
         if (!UserService.existsById(user.getId())) {
             modelAndView.addObject("error", "User must be registered to place bets.");
             return modelAndView;
         }
 
-
         try {
-
             if (user == null) {
                 throw new IllegalArgumentException("User does not exist.");
             }
@@ -86,18 +103,32 @@ public class BettingController {
                 throw new IllegalArgumentException("Insufficient balance.");
             }
 
-            if ("yes".equalsIgnoreCase(outcome)) {
-                bettingService.buyShares(user.getId(), "YES", amount );
-            } else if ("no".equalsIgnoreCase(outcome)) {
-                bettingService.buyShares(user.getId(), "NO", amount);
+            if ("BUY".equalsIgnoreCase(transactionType)) {
+                if ("yes".equalsIgnoreCase(outcome)) {
+                    bettingService.buyShares(user.getId(), "YES", amount);
+                } else if ("no".equalsIgnoreCase(outcome)) {
+                    bettingService.buyShares(user.getId(), "NO", amount);
+                }
+            } else if ("SELL".equalsIgnoreCase(transactionType)) {
+                if ("yes".equalsIgnoreCase(outcome)) {
+                    bettingService.sellShares(user.getId(), "YES", amount);
+                } else if ("no".equalsIgnoreCase(outcome)) {
+                    bettingService.sellShares(user.getId(), "NO", amount);
+                }
             }
-            modelAndView.addObject("message", "Bet placed successfully!");
+
+            // Update the user's balance in the session after the transaction
+            user = UserService.findUserById(user.getId()); // Assuming UserService.findById returns the updated User object
+            session.setAttribute("user", user);
+
+            modelAndView.addObject("message", "Transaction processed successfully!");
         } catch (IllegalArgumentException e) {
             modelAndView.addObject("error", e.getMessage());
         }
 
         return modelAndView;
     }
+
 
 
 

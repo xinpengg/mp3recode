@@ -44,13 +44,13 @@ super (someValue, someValue);
     }
     public void sellShares(String userId, String outcome, int shares) {
         outcome = outcome.toUpperCase();
-        User user = users.get(userId);
+        User user = userService.findUserById(userId);
         System.out.println("User " + userId + " is buying " + shares + " " + outcome + " shares.");
 
-//        if (user == null) {
-//            System.out.println("Transaction failed. User not found.");
-//            return;
-//        }
+        if (user == null) {
+            System.out.println("Transaction failed. User not found.");
+            return;
+        }
 
         double cost = super.sellShares(outcome, shares);
         if (cost <= 0 || user.getBalance() < cost || user.getTotalShares() < shares) {
@@ -93,15 +93,23 @@ super (someValue, someValue);
         // Here, you might want to check if the cost is higher than the amount due to rounding of shares
         if (cost > amount) {
             System.out.println("User does not have enough money for " + shares + " shares. Adjusting the number of shares down.");
-            shares = (int)(amount / pricePerShare); // Adjust the number of shares down
-            cost = super.buyShares(outcome, shares); // Recalculate cost with the adjusted number of shares
+            shares = (int)(amount / pricePerShare);
+            cost = super.buyShares(outcome, shares);
+        }
+
+        // Check if the user will end up with negative capital after buying shares
+        if (user.getBalance() - cost < 0) {
+            System.out.println("Transaction failed. User will end up with negative capital.");
+            return;
         }
 
         user.setBalance(user.getBalance() - cost);
+        System.out.println(user.getBalance());
         user.addShares(outcome, shares);
-        userService.save(user); // Persist the updated user state using UserService
+        userService.save(user);
         System.out.println("User " + userId + " bought " + shares + " " + outcome + " shares for " + cost);
     }
+
 
     protected void setUserService(UserService service) {
         	        this.userService = service;
