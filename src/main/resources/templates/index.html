@@ -11,12 +11,25 @@
 <div th:if="${message}" th:text="${message}"></div>
 <div th:if="${error}" th:text="${error}"></div>
 
-<!-- Betting form -->
+<!-- Display user balance -->
+<div th:if="${userBalance}" >
+    <p>Your Balance: <span th:text="${userBalance}"></span></p>
+</div>
+
+<!-- Betting buttons -->
 <form action="#" th:action="@{/bet}" method="post">
-    <input type="text" name="userId" placeholder="User ID">
-    <input type="text" name="outcome" placeholder="Outcome (YES/NO)">
-    <input type="number" name="shares" placeholder="Shares">
-    <button type="submit">Place Bet</button>
+    <input type="hidden" name="userId" th:value="${userId}">
+    <div>
+        <button type="submit" name="outcome" value="YES">
+            Bet YES <span th:text="${yesPrice}"></span>
+        </button>
+        <input type="number" name="shares" placeholder="Shares" required>
+    </div>
+    <div>
+        <button type="submit" name="outcome" value="NO">
+            Bet NO <span th:text="${noPrice}"></span>
+        </button>
+    </div>
 </form>
 
 <!-- Liquidity Information -->

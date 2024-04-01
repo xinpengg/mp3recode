@@ -12,6 +12,8 @@ public class User {
     @Id
     private String id;
     private double balance;
+    private String password;
+
     @ElementCollection
     @CollectionTable(name = "user_shares", joinColumns = @JoinColumn(name = "user_id"))
     @MapKeyColumn(name = "outcome")
@@ -30,8 +32,11 @@ public class User {
     public double getBalance() {
         return balance;
     }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-    public void setBalance(double balance) {
+        public void setBalance(double balance) {
         this.balance = balance;
     }
 
@@ -70,5 +75,10 @@ public class User {
             throw new IllegalArgumentException("Not enough shares to sell");
         }
         shares.put(outcome, currentShares - quantity);
+    }
+
+    public String getPassword() {
+        return password;
+
     }
 }

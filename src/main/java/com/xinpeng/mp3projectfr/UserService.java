@@ -14,6 +14,10 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    public User findUserById(String userId) {
+        return userRepository.findById(userId).orElse(null);
+    }
+
     public void register(User user) {
         userRepository.save(user);
     }
@@ -24,5 +28,9 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public void save(User user) {
+        userRepository.save(user);
     }
 }

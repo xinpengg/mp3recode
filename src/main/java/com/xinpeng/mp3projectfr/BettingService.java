@@ -8,13 +8,17 @@ public class BettingService extends Market {
     private Market market;
     private Map<String, User> users;
 
+    private   UserService userService;
+
     public BettingService() {
         super(10000,10000);
         this.users = new HashMap<>();
     }
     public BettingService(UserService userService) {
-        super(10000,10000);
+        super(10000, 10000);
+        this.userService = userService;
         this.users = new HashMap<>();
+
     }
 
     // Constructor that doesn't directly initialize userService, calls another constructor that does
@@ -23,11 +27,10 @@ super (someValue, someValue);
         this.users = new HashMap<>();
     }
 
-    // Another constructor that doesn't directly initialize userService, calls another constructor that does
     public BettingService(Market market, UserService userService) {
-        this(userService);  // Call the constructor that initializes userService
+        this(userService);
         this.market = market;
-        // additional initialization
+
     }
 
     public BettingService(int yesLiquidity, int noLiquidity) {
@@ -68,9 +71,9 @@ super (someValue, someValue);
 
     public void buyShares(String userId, String outcome, int shares) {
         outcome = outcome.toUpperCase();
-        User user = users.get(userId);
+        User user = userService.findUserById(userId); // Retrieve user from UserService
 
-        if (user.getId() == null) {
+        if (user == null) {
             System.out.println("Transaction failed. User not found.");
             return;
         }
@@ -85,8 +88,13 @@ super (someValue, someValue);
 
         user.setBalance(user.getBalance() - cost);
         user.addShares(outcome, shares);
+        userService.save(user); // Persist the updated user state using UserService
         System.out.println("User " + userId + " bought " + shares + " " + outcome + " shares for " + cost);
     }
+
+	protected void setUserService(UserService service) {
+        	        this.userService = service;
+        	    }
     public double calculateCost(String outcome, int shares) {
         outcome = outcome.toUpperCase();
         double tempYesLiquidity = getYesLiquidity(); // Temporary variables to simulate the transaction
