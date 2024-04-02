@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>List of Bets</title>
+    <!-- Add your CSS links here -->
+</head>
+<body>
+<div class="container">
+    <h2>List of Bets</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Question</th>
+            <th>View</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="bet : ${bets}">
+            <td th:text="${bet.id}"></td>
+            <td th:text="${bet.name}"></td>
+            <td><a th:href="@{/bet/{id}(id=${bet.id})}" th:text="'View Bet ' + ${bet.id}">View Bet</a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

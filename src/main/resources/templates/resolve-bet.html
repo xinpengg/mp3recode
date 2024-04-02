@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Resolve Bet</title>
+    <!-- Add your CSS links here -->
+</head>
+<body>
+<div class="container">
+    <h2>Resolve a Bet</h2>
+    <form th:action="@{/resolve}" th:object="${resolveBet}" method="post">
+        <div class="form-group">
+            <label for="betId">Bet ID:</label>
+            <input type="number" id="betId" name="betId" th:field="*{betId}" required class="form-control"/>
+        </div>
+        <div class="form-group">
+            <label for="winningOutcome">Winning Outcome:</label>
+            <select id="winningOutcome" name="winningOutcome" th:field="*{winningOutcome}" required class="form-control">
+                <option value="YES">YES</option>
+                <option value="NO">NO</option>
+                <!-- Add more outcomes as needed -->
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success">Resolve Bet</button>
+    </form>
+</div>
+</body>
+</html>

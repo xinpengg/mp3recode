@@ -5,24 +5,33 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
-@Entity
-public class Bet  extends BettingService{
-    private String name;
-    private String outcome;
-    private double description;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+import java.util.concurrent.atomic.AtomicLong;
+
+public class Bet extends BettingService {
+
+    private static final AtomicLong ID_COUNTER = new AtomicLong(0);
+
 
     private Long id;
 
+    private String name;
+    private String outcome;
+    private String description;
+    private String odds;
+
+
+
     public Bet() {
-        super();
+            this.id = ID_COUNTER.incrementAndGet(); // Ensuring that this line is being executed
+
     }
-    public Bet(String name, String outcome, double description) {
+
+    public Bet(String name, String description) {
+        this();
         this.name = name;
-        this.outcome = outcome;
         this.description = description;
     }
+
     public void resolveBet(String winningOutcome) {
         winningOutcome = winningOutcome.toUpperCase();
         String losingOutcome = winningOutcome.equals("YES") ? "NO" : "YES";
@@ -48,13 +57,22 @@ public class Bet  extends BettingService{
         }
     }
 
+    @Override
+    public String toString() {
+        return "Bet{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", outcome='" + outcome + '\'' +
+                ", description='" + description + '\'' +
+                '}';
+    }
     public String getName() {
         return name;
     }
     public String getOutcome() {
         return outcome;
     }
-    public double getDescription() {
+    public String getDescription() {
         return description;
     }
 
@@ -64,5 +82,24 @@ public class Bet  extends BettingService{
 
     public Long getId() {
         return id;
+    }
+    public String getOdds() {
+        return odds;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setOdds(String odds) {
+        this.odds = odds;
+    }
+
+    public void setOutcome(String outcome) {
+        this.outcome = outcome;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

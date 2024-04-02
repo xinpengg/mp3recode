@@ -1,40 +1,41 @@
 package com.xinpeng.mp3projectfr;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.xinpeng.mp3projectfr.Bet;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class BetService {
 
-    private final BetRepository betRepository;
+    private List<Bet> bets = new ArrayList<>(); // Replacing the repository
 
-    @Autowired
-    public BetService(BetRepository betRepository) {
-        this.betRepository = betRepository;
+    public Bet createBet(String name, String description) {
+        Bet bet = new Bet(name, description);
+        // Assuming a manual way of setting ID or not using ID at all
+        bets.add(bet);
+        return bet;
     }
 
-    public Bet createBet(String name, String outcome, double description) {
-        Bet bet = new Bet(name, outcome, description);
-        return betRepository.save(bet);
-    }
     public List<Bet> getAllBets() {
-        return betRepository.findAll();
+        return bets;
     }
 
     public Bet resolveBet(Long betId, String winningOutcome) {
-        Bet bet = betRepository.findById(betId).orElse(null); // Find the bet by ID
-        if (bet != null) {
-            bet.resolveBet(winningOutcome); // Resolve the bet using the provided outcome
-            return betRepository.save(bet); // Save the changes to the bet
+        for (Bet bet : bets) {
+            if (bet.getId().equals(betId)) { // Assuming you're manually managing IDs
+                bet.resolveBet(winningOutcome);
+                return bet;
+            }
         }
-        return null;
+        return null; // No bet found with the given ID
     }
 
     public Bet createBet(Bet bet) {
-        return betRepository.save(bet);
-
+        bets.add(bet);
+        return bet;
     }
-}
 
+    // Additional methods for updating and deleting bets as needed
+}
