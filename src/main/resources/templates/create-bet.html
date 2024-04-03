@@ -37,8 +37,8 @@
 </head>
 <body>
 <div class="container my-5">
-    <h2>Create Custom Bet</h2>
-    <form th:action="@{/custombet/create}" th:object="${bet}" method="post" class="mt-4">
+    <h2>Create Your Own Question</h2>
+    <form th:action="@{/create}" th:object="${bet}" method="post" class="mt-4">
         <div class="form-group">
             <label for="name" class="form-label">Question*</label>
             <input type="text" class="form-control" id="name" name="name" th:field="*{name}" placeholder="Enter your question here" required>
@@ -46,6 +46,11 @@
         <div class="form-group">
             <label for="description" class="form-label">Description</label>
             <textarea class="form-control" id="description" name="description" th:field="*{description}" rows="4" placeholder="Optional. Provide background info and details." required></textarea>
+        </div>
+        <!-- Password field for bet resolution -->
+        <div class="form-group">
+            <label for="resolutionPassword" class="form-label">Resolution Password</label>
+            <input type="password" class="form-control" id="resolutionPassword" name="resolutionPassword" placeholder="Enter a resolution password" required>
         </div>
         <button type="submit" class="btn btn-primary">Create Question</button>
     </form>

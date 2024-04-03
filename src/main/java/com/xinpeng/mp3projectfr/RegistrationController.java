@@ -34,7 +34,6 @@ public class RegistrationController {
 
         model.addAttribute("message", "Registration successful!");
 
-        // Redirect to login page after successful registration
         return "redirect:/login";
     }
 

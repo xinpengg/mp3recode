@@ -22,6 +22,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+
     public boolean existsById(String id) {
         return userRepository.existsById(id);
     }

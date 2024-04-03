@@ -103,7 +103,6 @@ public class BettingController {
                 }
             }
 
-            // Update the user's balance in the session after the transaction
             user = UserService.findUserById(user.getId()); // Assuming UserService.findById returns the updated User object
             session.setAttribute("user", user);
 

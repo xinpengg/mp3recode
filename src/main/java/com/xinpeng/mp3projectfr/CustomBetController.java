@@ -30,23 +30,23 @@ public class CustomBetController {
     public String showCreateBetForm(Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            // If user is not signed in, redirect to login page
             return "redirect:/login";
         }
-        // If user is signed in, show the create bet form
         model.addAttribute("bet", new UnifiedBettingSystem());
         return "create-bet";
     }
 
     @PostMapping("/create")
-    public String createBet(@ModelAttribute UnifiedBettingSystem unifiedBettingSystem, HttpSession session, RedirectAttributes redirectAttrs) {
+    public String createBet(@ModelAttribute UnifiedBettingSystem unifiedBettingSystem, @RequestParam String resolutionPassword, HttpSession session, RedirectAttributes redirectAttrs) {
         User user = (User) session.getAttribute("user");
-        System.out.println("ff" + user.getId());
         if (user == null) {
             return "redirect:/login";
         }
-        unifiedBettingSystem.setCreatorUserId(user.getId());
-        System.out.println("test" + unifiedBettingSystem.getCreatorUserId());
+        // Hash the resolution password and store it
+        String resolutionPasswordHash = resolutionPassword;
+        unifiedBettingSystem.setResolutionPasswordHash(user.getId());
+        unifiedBettingSystem.setResolutionPasswordHash(resolutionPasswordHash);
+        System.out.println("test" + resolutionPasswordHash);
         UnifiedBettingSystem createdBet = betService.createCustomBet(unifiedBettingSystem.getName(), unifiedBettingSystem.getDescription(), UserService);
         redirectAttrs.addFlashAttribute("betId", createdBet.getId());
         return "redirect:/bets/list";
@@ -76,9 +76,13 @@ public String viewBets() {
         try {
             if ("BUY".equalsIgnoreCase(transactionType)) {
                 bet.buyShares(user.getId(), outcome, amount);
+                user = UserService.findUserById(user.getId());
+                session.setAttribute("user", user);
                 System.out.println("User " + user.getId() + " bought " + amount + " shares for " + outcome + " at " + bet.getName() + " bet.");
             } else if ("SELL".equalsIgnoreCase(transactionType)) {
                 bet.sellShares(user.getId(), outcome, (int) amount);
+                user = UserService.findUserById(user.getId());
+                session.setAttribute("user", user);
                 System.out.println("User " + user.getId() + " sold " + amount + " shares for " + outcome + " at " + bet.getName() + " bet.");
             } else {
                 throw new IllegalArgumentException("Invalid transaction type.");
@@ -97,22 +101,20 @@ public String viewBets() {
     @GetMapping("/bet/{betId}")
     public ModelAndView viewBet(@PathVariable Long betId, HttpSession session) {
         ModelAndView modelAndView = new ModelAndView("bet_page");
-
-        // Check if the user is logged in
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            return new ModelAndView("redirect:/login"); // Redirect to the login page if the user is not logged in
+            return new ModelAndView("redirect:/login");
         }
 
-
         UnifiedBettingSystem bet = betService.getBetById(betId);
-        bet.setUserService(UserService);
-
         if (bet == null) {
             modelAndView.addObject("error", "The requested bet does not exist.");
             modelAndView.setViewName("error");
             return modelAndView;
         }
+
+        // Debugging
+        System.out.println("Session User ID: " + user.getId());
 
         modelAndView.addObject("bet", bet);
         modelAndView.addObject("balance", user.getBalance());
@@ -120,7 +122,9 @@ public String viewBets() {
         modelAndView.addObject("noPrice", bet.getPrice("NO"));
         modelAndView.addObject("name", bet.getName());
         modelAndView.addObject("description", bet.getDescription());
-        modelAndView.addObject("isCreator", user.getId().equals(bet.getCreatorUserId()));
+        modelAndView.addObject("yesShares", user.getShares("YES"));
+        modelAndView.addObject("noShares", user.getShares("NO"));
+
 
         return modelAndView;
     }
@@ -135,36 +139,55 @@ public String viewBets() {
     }
 
 
-    @GetMapping("/resolve")
-    public String showResolveBetForm(Model model) {
-        model.addAttribute("resolveBet", new ResolveBet());
-        return "resolve-bet";
-    }
-
-
-    @PostMapping("/resolve")
-    public String resolveBet(@ModelAttribute ResolveBet resolveBet, HttpSession session, RedirectAttributes redirectAttrs) {
+    @GetMapping("/bets/{betId}/resolve")
+    public String showResolveBetForm(@PathVariable Long betId, Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/login";
         }
-        UnifiedBettingSystem bet = betService.getBetById(resolveBet.getBetId());
+        UnifiedBettingSystem bet = betService.getBetById(betId);
+        if (bet == null) {
+            model.addAttribute("error", "The requested bet does not exist.");
+            return "error";
+        }
+        model.addAttribute("betId", betId);
+        return "resolve-bet";
+    }
+    @PostMapping("/bets/{betId}/resolve")
+    public String resolveBet(@PathVariable Long betId,
+                             @RequestParam String winningOutcome,
+                             @RequestParam String resolutionPassword,
+                             HttpSession session,
+                             RedirectAttributes redirectAttrs) {
 
-        if (bet == null || !bet.getCreatorUserId().equals(user.getId())) {
-            redirectAttrs.addFlashAttribute("error", "You are not authorized to resolve this bet.");
+        UnifiedBettingSystem bet = betService.getBetById(betId);
+
+        if (bet == null) {
+            redirectAttrs.addFlashAttribute("error", "Bet not found.");
             return "redirect:/bets/list";
         }
 
-        betService.resolveBet(resolveBet.getBetId(), resolveBet.getWinningOutcome());
-        return "redirect:/bets/list";
+        if (resolutionPassword.equals(bet.getResolutionPasswordHash())) {
+            redirectAttrs.addFlashAttribute("error", "Incorrect resolution password.");
+            return "redirect:/bets/" + betId + "/resolve";
+        }
+
+        betService.resolveBet(betId, winningOutcome);
+
+        redirectAttrs.addFlashAttribute("message", "Bet resolved successfully with outcome: " + winningOutcome);
+        System.out.println("Bet resolved successfully with outcome: " + winningOutcome);
+
+        return "redirect:/bets/view";
     }
+
+
     @GetMapping("/bets/list")
     public String listBets(Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/login";
         }
-        List<UnifiedBettingSystem> bets = betService.getAllBets();
+        List<UnifiedBettingSystem> bets = betService.getActiveBets();
         model.addAttribute("bets", bets);
         return "list-bets";
     }

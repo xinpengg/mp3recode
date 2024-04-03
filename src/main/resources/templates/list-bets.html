@@ -27,12 +27,11 @@
 </head>
 <body>
 <div class="container my-4">
-    <h2 class="mb-4">List of Ongoing Predictions </h2>
+    <h2 class="mb-4">List of Ongoing Predictions</h2>
     <div class="list-group">
         <div th:each="bet : ${bets}" class="list-group-item flex-column align-items-start py-3">
             <div class="d-flex w-100 justify-content-between">
                 <h5 class="mb-1" th:text="${bet.name}">Bet Name Placeholder</h5>
-                <small class="text-muted" th:text="${bet.creatorUserId}">Creator ID Placeholder</small>
             </div>
             <div class="progress my-2 odds-row">
                 <div class="progress-bar bg-success" th:style="'width:' + ${bet.getPrice('YES')*100} + '%'" th:text="${bet.getPrice('YES')*100} + '%'">Odds Placeholder</div>
@@ -40,18 +39,12 @@
             <a th:href="@{/bet/{id}(id=${bet.id})}" class="btn btn-primary mt-2">View Bet</a>
         </div>
     </div>
-</div>
-<body>
-<div class="container my-4">
-    <h2 class="mb-4"></h2>
-    <!-- ... existing content ... -->
 
     <!-- Add link to create a new poll -->
     <div class="mt-4">
-        <a href="/create" class="btn btn-success">Create Question</a>
+        <a href="/create" class="btn btn-success">Create New Question</a>
     </div>
 </div>
-
 
 <!-- Bootstrap and jQuery scripts for interactivity -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

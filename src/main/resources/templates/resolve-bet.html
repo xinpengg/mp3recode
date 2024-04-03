@@ -1,27 +1,46 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>Resolve Bet</title>
-    <!-- Add your CSS links here -->
+    <!-- Bootstrap CSS CDN for styling -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-    <h2>Resolve a Bet</h2>
-    <form th:action="@{/resolve}" th:object="${resolveBet}" method="post">
+    <h2>Resolve Bet</h2>
+    <p>Please select the winning outcome and provide the resolution password to resolve the bet.</p>
+    <!-- Display any potential error messages -->
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <!-- Form to resolve a bet -->
+    <form th:action="@{/bets/{betId}/resolve(betId=${betId})}" method="post">
         <div class="form-group">
-            <label for="betId">Bet ID:</label>
-            <input type="number" id="betId" name="betId" th:field="*{betId}" required class="form-control"/>
-        </div>
-        <div class="form-group">
-            <label for="winningOutcome">Winning Outcome:</label>
-            <select id="winningOutcome" name="winningOutcome" th:field="*{winningOutcome}" required class="form-control">
+            <label for="winningOutcome">Winning Outcome</label>
+            <select id="winningOutcome" name="winningOutcome" class="form-control">
                 <option value="YES">YES</option>
                 <option value="NO">NO</option>
-                <!-- Add more outcomes as needed -->
             </select>
         </div>
-        <button type="submit" class="btn btn-success">Resolve Bet</button>
+
+        <div class="form-group">
+            <label for="resolutionPassword">Resolution Password</label>
+            <input type="password" id="resolutionPassword" name="resolutionPassword" class="form-control" placeholder="Enter resolution password" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Resolve Bet</button>
     </form>
 </div>
+
+<!-- Bootstrap and jQuery scripts for interactivity -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

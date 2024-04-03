@@ -44,24 +44,11 @@
     <div th:if="${noShares}">
         <p>NO Shares: <span th:text="${noShares}"></span></p>
     </div>
-    <div th:if="${bet.creatorUserId} == ${session.user.id}" class="mt-4">
-        <h3>Resolve Bet</h3>
-        <form th:action="@{/resolve}" method="post">
-            <input type="hidden" name="betId" th:value="${bet.id}" />
-            <div class="form-group">
-                <label for="winningOutcome">Winning Outcome</label>
-                <select class="form-control" id="winningOutcome" name="winningOutcome">
-                    <option value="YES">YES</option>
-                    <option value="NO">NO</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-danger w-100">Resolve Bet</button>
-        </form>
-    </div>
+
 
 
     <!-- Betting Form -->
-    <form th:action="@{/placeBet}" method="post" class="border p-4">
+    <form th:action="@{/bets/{betId}/resolve}" method="post" class="border p-4">
         <!-- Include betId as a hidden field -->
         <input type="hidden" name="betId" th:value="${bet.id}"/>
 
@@ -78,7 +65,6 @@
             </div>
         </div>
         <!-- Diagnostic Outputs -->
-        <p>Creator ID: <span th:text="${bet.creatorUserId}"></span></p>
         <p>Session User ID: <span th:text="${session.user.id}"></span></p>
 
         <!-- Outcome Selection -->
@@ -104,6 +90,11 @@
         <button type="submit" class="btn btn-primary w-100">Place Bet</button>
     </form>
 
+</div>
+<div class="mt-4">
+    <h3>Manage Bet</h3>
+    <!-- Button to redirect to the resolve bet page -->
+    <a th:href="@{/bets/{betId}/resolve(betId=${bet.id})}" class="btn btn-warning w-100">Resolve or Manage Bet</a>
 </div>
 
 <!-- Bootstrap and other scripts -->

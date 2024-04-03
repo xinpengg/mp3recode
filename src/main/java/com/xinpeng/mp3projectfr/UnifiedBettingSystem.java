@@ -15,13 +15,15 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 public class UnifiedBettingSystem {
     private static final AtomicLong ID_COUNTER = new AtomicLong(0);
-    private String creatorUserId;
+    private String resolutionPasswordHash;
     private Long id;
     private String name;
     private String outcome;
     private String description;
     private double yesLiquidity;
     private double noLiquidity;
+    private boolean resolved = false;
+
     private Map<String, User> users = new HashMap<>();
     @Autowired
     private UserService userService;
@@ -211,7 +213,7 @@ public class UnifiedBettingSystem {
             int winningShares = user.getShares(winningOutcome);
             int losingShares = user.getShares(winningOutcome.equals("YES") ? "NO" : "YES");
 
-            double profit = winningShares * calculatePricePerShare(winningOutcome);
+            double profit = winningShares;
             user.addBalance(profit);
 
             if (winningShares > 0) {
@@ -220,6 +222,8 @@ public class UnifiedBettingSystem {
 
             user.removeShares("YES", user.getShares("YES"));
             user.removeShares("NO", user.getShares("NO"));
+            this.outcome = winningOutcome;
+            this.resolved = true;
         }
     }
 
@@ -248,11 +252,11 @@ public class UnifiedBettingSystem {
     public Long getId() {
         return id;
     }
-    public void setCreatorUserId(String creatorUserId) {
-        this.creatorUserId = creatorUserId;
+    public void setResolutionPasswordHash(String creatorUserId) {
+        this.resolutionPasswordHash = creatorUserId;
     }
-    public String getCreatorUserId() {
-        return creatorUserId;
+    public String getResolutionPasswordHash() {
+        return resolutionPasswordHash;
     }
 
     public void setId(Long id) {
@@ -282,6 +286,14 @@ public class UnifiedBettingSystem {
     public void setDescription(String description) {
         this.description = description;
     }
+    public boolean isResolved() {
+        return resolved;
+    }
+
+    public void setResolved(boolean resolved) {
+        this.resolved = resolved;
+    }
+
 
 
 
