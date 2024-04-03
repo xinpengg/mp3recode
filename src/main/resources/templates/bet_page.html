@@ -1,39 +1,95 @@
-<form th:action="@{/placeBet}" method="post" class="border p-4">
-    <!-- Include betId as a hidden field -->
-    <input type="hidden" name="betId" th:value="${bet.id}"/>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Betting Site</title>
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script>
+        function updatePlaceholder() {
+            var transactionType = document.querySelector('input[name="transactionType"]:checked').value;
+            var amountInput = document.getElementById('amount');
+            if (transactionType === 'SELL') {
+                amountInput.placeholder = 'Shares';
+            } else {
+                amountInput.placeholder = '$100.00';
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="container mt-5">
+    <h1>
+        <img src="logo.jpg" alt="Logo" style="height:50px;"> <!-- Replace 'logo.png' with the path to your logo image -->
+        HolmerMarkets
+    </h1>
 
-    <!-- Buy/Sell Options -->
-    <div class="form-group">
-        <label>Transaction Type</label>
-        <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-outline-primary">
-                <input type="radio" name="transactionType" id="buyOption" value="BUY" onclick="updatePlaceholder()" checked> BUY
-            </label>
-            <label class="btn btn-outline-secondary">
-                <input type="radio" name="transactionType" id="sellOption" value="SELL" onclick="updatePlaceholder()"> SELL
-            </label>
+    <div class="my-4">
+        <h2 th:text="${name}">Name Placeholder</h2>
+        <p th:text="${description}">Description Placeholder</p>
+    </div>
+
+    <!-- Display messages -->
+    <div th:if="${message}" th:text="${message}" class="alert alert-success"></div>
+    <div th:if="${error}" th:text="${error}" class="alert alert-danger"></div>
+
+    <!-- Display user balance -->
+    <div th:if="${balance}">
+        <p>$HOLMERS: <span th:text="${balance}"></span></p>
+    </div>
+
+    <!-- Display user shares -->
+    <div th:if="${yesShares}">
+        <p>YES Shares: <span th:text="${yesShares}"></span></p>
+    </div>
+    <div th:if="${noShares}">
+        <p>NO Shares: <span th:text="${noShares}"></span></p>
+    </div>
+
+    <!-- Betting Form -->
+    <form th:action="@{/placeBet}" method="post" class="border p-4">
+        <!-- Include betId as a hidden field -->
+        <input type="hidden" name="betId" th:value="${bet.id}"/>
+
+        <!-- Buy/Sell Options -->
+        <div class="form-group">
+            <label>Transaction Type</label>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-outline-primary">
+                    <input type="radio" name="transactionType" id="buyOption" value="BUY" onclick="updatePlaceholder()" checked> BUY
+                </label>
+                <label class="btn btn-outline-secondary">
+                    <input type="radio" name="transactionType" id="sellOption" value="SELL" onclick="updatePlaceholder()"> SELL
+                </label>
+            </div>
         </div>
-    </div>
 
-    <!-- Outcome Selection -->
-    <div class="form-group">
-        <label>Outcome</label>
-        <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-outline-success">
-                <input type="radio" name="outcome" id="yesOutcome" value="YES"> YES <span th:text="${yesPrice}"></span>
-            </label>
-            <label class="btn btn-outline-danger">
-                <input type="radio" name="outcome" id="noOutcome" value="NO"> NO <span th:text="${noPrice}"></span>
-            </label>
+        <!-- Outcome Selection -->
+        <div class="form-group">
+            <label>Outcome</label>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-outline-success">
+                    <input type="radio" name="outcome" id="yesOutcome" value="YES"> YES <span th:text="${yesPrice}"></span>
+                </label>
+                <label class="btn btn-outline-danger">
+                    <input type="radio" name="outcome" id="noOutcome" value="NO"> NO <span th:text="${noPrice}"></span>
+                </label>
+            </div>
         </div>
-    </div>
 
-    <!-- Amount Input -->
-    <div class="form-group">
-        <label for="amount">Amount</label>
-        <input type="number" class="form-control" id="amount" name="amount" placeholder="$100.00" required>
-    </div>
+        <!-- Amount Input -->
+        <div class="form-group">
+            <label for="amount">Amount</label>
+            <input type="number" class="form-control" id="amount" name="amount" placeholder="$100.00" required>
+        </div>
 
-    <!-- Place Bet Button -->
-    <button type="submit" class="btn btn-primary w-100">Place Bet</button>
-</form>
+        <!-- Place Bet Button -->
+        <button type="submit" class="btn btn-primary w-100">Place Bet</button>
+    </form>
+</div>
+
+<!-- Bootstrap and other scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.6/dist/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -111,6 +111,8 @@ public String viewBets() {
         modelAndView.addObject("balance", user.getBalance());
         modelAndView.addObject("yesPrice", bet.getPrice("YES"));
         modelAndView.addObject("noPrice", bet.getPrice("NO"));
+        modelAndView.addObject("name", bet.getName());
+        modelAndView.addObject("description", bet.getDescription());
 
         return modelAndView;
     }
