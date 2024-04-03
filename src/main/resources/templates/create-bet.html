@@ -2,22 +2,60 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Create Custom Bet</title>
-    <!-- Include your stylesheets here -->
+    <!-- Bootstrap CSS for styling -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Additional custom styles if needed -->
+    <style>
+        .form-control {
+            border-radius: 0.25rem; /* Slight rounding of corners */
+            font-size: 1rem; /* Standard font size */
+            line-height: 1.5; /* Good readability line height */
+        }
+        .form-group {
+            margin-bottom: 1rem; /* Spacing between form groups */
+        }
+        .form-label {
+            display: block; /* Ensure the label is block-level for proper spacing */
+            margin-bottom: 0.5rem; /* Space between label and input */
+        }
+        /* Styling the button to look more modern */
+        button[type="submit"] {
+            background-color: #007bff; /* Bootstrap primary color */
+            border: none;
+            padding: 10px 15px; /* Padding for a larger click area */
+            color: white;
+            border-radius: 0.25rem; /* Rounded corners for the button */
+            cursor: pointer; /* Hand cursor on hover */
+            font-size: 1rem; /* Matching font size to inputs */
+            line-height: 1.5;
+            transition: background-color 0.15s; /* Smooth transition for hover effect */
+        }
+        button[type="submit"]:hover {
+            background-color: #0056b3; /* Darken button on hover */
+        }
+    </style>
 </head>
 <body>
-<div class="container">
+<div class="container my-5">
     <h2>Create Custom Bet</h2>
-    <form th:action="@{/custombet/create}" th:object="${bet}" method="post">
+    <form th:action="@{/custombet/create}" th:object="${bet}" method="post" class="mt-4">
         <div class="form-group">
-            <label for="name">Bet Name:</label>
-            <input type="text" id="name" name="name" th:field="*{name}" required>
+            <label for="name" class="form-label">Question*</label>
+            <input type="text" class="form-control" id="name" name="name" th:field="*{name}" placeholder="Enter your question here" required>
         </div>
         <div class="form-group">
-            <label for="description">Description:</label>
-            <textarea id="description" name="description" th:field="*{description}" required></textarea>
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" th:field="*{description}" rows="4" placeholder="Optional. Provide background info and details." required></textarea>
         </div>
-        <button type="submit">Create Bet</button>
+        <button type="submit" class="btn btn-primary">Create Question</button>
     </form>
 </div>
+
+<!-- Optional JavaScript; choose one of the two! -->
+
+<!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

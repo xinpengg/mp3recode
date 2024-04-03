@@ -22,13 +22,18 @@ public class CustomBetController {
         this.betService = betService;
         this.UserService = userService;
         System.out.println("f23eufwqhufq");
-
         System.out.println(userService.toString()) ;
         this.unifiedBettingSystem = unifiedBettingSystem;
     }
 
     @GetMapping("/create")
-    public String showCreateBetForm(Model model) {
+    public String showCreateBetForm(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            // If user is not signed in, redirect to login page
+            return "redirect:/login";
+        }
+        // If user is signed in, show the create bet form
         model.addAttribute("bet", new UnifiedBettingSystem());
         return "create-bet";
     }
@@ -36,10 +41,12 @@ public class CustomBetController {
     @PostMapping("/create")
     public String createBet(@ModelAttribute UnifiedBettingSystem unifiedBettingSystem, HttpSession session, RedirectAttributes redirectAttrs) {
         User user = (User) session.getAttribute("user");
+        System.out.println("ff" + user.getId());
         if (user == null) {
             return "redirect:/login";
         }
-
+        unifiedBettingSystem.setCreatorUserId(user.getId());
+        System.out.println("test" + unifiedBettingSystem.getCreatorUserId());
         UnifiedBettingSystem createdBet = betService.createCustomBet(unifiedBettingSystem.getName(), unifiedBettingSystem.getDescription(), UserService);
         redirectAttrs.addFlashAttribute("betId", createdBet.getId());
         return "redirect:/bets/list";
@@ -48,7 +55,7 @@ public class CustomBetController {
 
 @GetMapping("/bets/view")
 public String viewBets() {
-    return "redirect:/bets/list"; // Redirect to the handler that shows the list of bets
+    return "redirect:/bets/list";
 }
 
     @PostMapping("/placeBet")
@@ -113,6 +120,7 @@ public String viewBets() {
         modelAndView.addObject("noPrice", bet.getPrice("NO"));
         modelAndView.addObject("name", bet.getName());
         modelAndView.addObject("description", bet.getDescription());
+        modelAndView.addObject("isCreator", user.getId().equals(bet.getCreatorUserId()));
 
         return modelAndView;
     }
@@ -135,15 +143,29 @@ public String viewBets() {
 
 
     @PostMapping("/resolve")
-    public String resolveBet(@ModelAttribute ResolveBet resolveBet) {
-        betService.resolveBet(resolveBet.getBetId(), resolveBet.getWinningOutcome());
-        return "redirect:/bets/list"; // Ensure this matches the GET mapping
-    }
+    public String resolveBet(@ModelAttribute ResolveBet resolveBet, HttpSession session, RedirectAttributes redirectAttrs) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        UnifiedBettingSystem bet = betService.getBetById(resolveBet.getBetId());
 
+        if (bet == null || !bet.getCreatorUserId().equals(user.getId())) {
+            redirectAttrs.addFlashAttribute("error", "You are not authorized to resolve this bet.");
+            return "redirect:/bets/list";
+        }
+
+        betService.resolveBet(resolveBet.getBetId(), resolveBet.getWinningOutcome());
+        return "redirect:/bets/list";
+    }
     @GetMapping("/bets/list")
-    public String listBets(Model model) {
-        List<UnifiedBettingSystem> bets = betService.getAllBets(); // Fetch all bets from your service
-        model.addAttribute("bets", bets); // Add the list of bets to the model
-        return "list-bets"; // Return the list-bets view
+    public String listBets(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        List<UnifiedBettingSystem> bets = betService.getAllBets();
+        model.addAttribute("bets", bets);
+        return "list-bets";
     }
 }

@@ -2,27 +2,60 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>List of Bets</title>
-    <!-- Add your CSS links here -->
+    <!-- Bootstrap CSS CDN for styling -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Custom styles for the progress bars and table -->
+    <style>
+        .progress {
+            height: 20px; /* smaller height for a more refined bar */
+        }
+        .progress-bar {
+            font-weight: bold;
+            color: black; /* Ensuring text inside the bar is readable */
+        }
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .question-row {
+            background-color: #f8f9fa; /* Light grey background for question row */
+            border-top: 1px solid #dee2e6; /* Standard table row border */
+        }
+        .odds-row {
+            background-color: #e9ecef; /* Slightly darker grey for contrast */
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-    <h2>List of Bets</h2>
-    <table class="table">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Question</th>
-            <th>View</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="bet : ${bets}">
-            <td th:text="${bet.id}"></td>
-            <td th:text="${bet.name}"></td>
-            <td><a th:href="@{/bet/{id}(id=${bet.id})}" th:text="'View Bet ' + ${bet.id}">View Bet</a></td>
-        </tr>
-        </tbody>
-    </table>
+<div class="container my-4">
+    <h2 class="mb-4">List of Ongoing Predictions </h2>
+    <div class="list-group">
+        <div th:each="bet : ${bets}" class="list-group-item flex-column align-items-start py-3">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1" th:text="${bet.name}">Bet Name Placeholder</h5>
+                <small class="text-muted" th:text="${bet.creatorUserId}">Creator ID Placeholder</small>
+            </div>
+            <div class="progress my-2 odds-row">
+                <div class="progress-bar bg-success" th:style="'width:' + ${bet.getPrice('YES')*100} + '%'" th:text="${bet.getPrice('YES')*100} + '%'">Odds Placeholder</div>
+            </div>
+            <a th:href="@{/bet/{id}(id=${bet.id})}" class="btn btn-primary mt-2">View Bet</a>
+        </div>
+    </div>
 </div>
+<body>
+<div class="container my-4">
+    <h2 class="mb-4"></h2>
+    <!-- ... existing content ... -->
+
+    <!-- Add link to create a new poll -->
+    <div class="mt-4">
+        <a href="/create" class="btn btn-success">Create Question</a>
+    </div>
+</div>
+
+
+<!-- Bootstrap and jQuery scripts for interactivity -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

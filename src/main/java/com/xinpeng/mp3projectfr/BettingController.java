@@ -11,7 +11,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class BettingController {
 
     private UnifiedBettingSystem unifiedBettingSystem;
-    private  UserService UserService;
+    private UserService UserService;
 
     @Autowired
     public BettingController(UnifiedBettingSystem unifiedBettingSystem, UserService userService) {
@@ -19,32 +19,18 @@ public class BettingController {
         UserService = userService;
         this.unifiedBettingSystem.setUserService(userService);
     }
-
     @GetMapping("/")
-    public ModelAndView index(HttpSession session) {
-        if (session.getAttribute("user") != null) {
-            ModelAndView modelAndView = new ModelAndView("index");
-            double balance = ((User) session.getAttribute("user")).getBalance();
-            System.out.println("Balance: " + balance);
-            modelAndView.addObject("balance", balance);
-            double yesPrice = unifiedBettingSystem.getPrice("YES");
-            double noPrice = unifiedBettingSystem.getPrice("NO");
-            modelAndView.addObject("yesPrice", yesPrice);
-            modelAndView.addObject("noPrice", noPrice);
-            modelAndView.addObject("yesShares", ((User) session.getAttribute("user")).getShares("YES"));
-            modelAndView.addObject("noShares", ((User) session.getAttribute("user")).getShares("NO"));
-            modelAndView.addObject("yesLiquidity", unifiedBettingSystem.getYesLiquidity());
-            modelAndView.addObject("noLiquidity", unifiedBettingSystem.getNoLiquidity());
-            return modelAndView;
-        } else {
-            return new ModelAndView("redirect:/login");
-        }
+    public String indexRedirect() {
+        return "redirect:/bets/list";
     }
+
+
 
     @GetMapping("/login")
     public String showLoginForm() {
         return "login";
     }
+
     @PostMapping("/login")
     public String loginUser(@RequestParam String username, @RequestParam String password, HttpSession session, RedirectAttributes redirectAttributes) {
         User user = UserService.findUserById(username);
@@ -53,13 +39,14 @@ public class BettingController {
             System.out.println(user.getId() + " logged in successfully!");
             session.setAttribute("user", user);
 
-            return "redirect:/" ;
+            return "redirect:/";
         } else {
             redirectAttributes.addFlashAttribute("error", "Invalid username or password.");
             System.out.println("Login failed.");
             return "redirect:/login";
         }
     }
+
     @PostMapping("/sell")
     public ModelAndView sellShares(@RequestParam String outcome, @RequestParam int shares, HttpSession session) {
         User user = (User) session.getAttribute("user");
@@ -79,7 +66,6 @@ public class BettingController {
 
         return modelAndView;
     }
-
 
 
     @PostMapping("/bet")
@@ -128,8 +114,4 @@ public class BettingController {
 
         return modelAndView;
     }
-
-
-
-
 }

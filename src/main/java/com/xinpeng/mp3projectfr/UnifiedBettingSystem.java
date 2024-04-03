@@ -15,11 +15,11 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 public class UnifiedBettingSystem {
     private static final AtomicLong ID_COUNTER = new AtomicLong(0);
+    private String creatorUserId;
     private Long id;
     private String name;
     private String outcome;
     private String description;
-    private String odds;
     private double yesLiquidity;
     private double noLiquidity;
     private Map<String, User> users = new HashMap<>();
@@ -28,8 +28,8 @@ public class UnifiedBettingSystem {
 
     public UnifiedBettingSystem() {
         this.id = ID_COUNTER.incrementAndGet();
-        this.yesLiquidity = 10000; // default value from Market constructor
-        this.noLiquidity = 10000; // default value from Market constructor
+        this.yesLiquidity = 5000;
+        this.noLiquidity = 5000;
     }
 
     public UnifiedBettingSystem(String name, String description) {
@@ -248,6 +248,12 @@ public class UnifiedBettingSystem {
     public Long getId() {
         return id;
     }
+    public void setCreatorUserId(String creatorUserId) {
+        this.creatorUserId = creatorUserId;
+    }
+    public String getCreatorUserId() {
+        return creatorUserId;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -277,13 +283,8 @@ public class UnifiedBettingSystem {
         this.description = description;
     }
 
-    public String getOdds() {
-        return odds;
-    }
 
-    public void setOdds(String odds) {
-        this.odds = odds;
-    }
+
 
     public double getYesLiquidity() {
         return yesLiquidity;
@@ -306,7 +307,7 @@ public class UnifiedBettingSystem {
                 ", name='" + name + '\'' +
                 ", outcome='" + outcome + '\'' +
                 ", description='" + description + '\'' +
-                ", odds='" + odds + '\'' +
+                ", " + '\'' +
                 ", yesLiquidity=" + yesLiquidity +
                 ", noLiquidity=" + noLiquidity +
                 '}';
