@@ -33,4 +33,7 @@ public class UserService {
     public void save(User user) {
         userRepository.save(user);
     }
+    public String toString() {
+        return getAllUsers().toString();
+    }
 }

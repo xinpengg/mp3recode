@@ -77,6 +77,16 @@ public class User {
         }
         shares.put(outcome, currentShares - quantity);
     }
+    public void addBalance(double amount) {
+        this.balance += amount;
+    }
+
+    public void subtractBalance(double amount) {
+        if (amount > balance) {
+            throw new IllegalArgumentException("Insufficient balance to subtract");
+        }
+        this.balance -= amount;
+    }
 
     public String getPassword() {
         return password;

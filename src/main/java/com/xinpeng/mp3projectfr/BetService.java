@@ -1,41 +1,60 @@
 package com.xinpeng.mp3projectfr;
 
-import com.xinpeng.mp3projectfr.Bet;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class BetService {
 
-    private List<Bet> bets = new ArrayList<>(); // Replacing the repository
+    private List<UnifiedBettingSystem> bets = new ArrayList<>();
+    private AtomicLong betIdGenerator = new AtomicLong();
 
-    public Bet createBet(String name, String description) {
-        Bet bet = new Bet(name, description);
-        // Assuming a manual way of setting ID or not using ID at all
-        bets.add(bet);
-        return bet;
-    }
 
-    public List<Bet> getAllBets() {
+    public List<UnifiedBettingSystem> getAllBets() {
         return bets;
     }
 
-    public Bet resolveBet(Long betId, String winningOutcome) {
-        for (Bet bet : bets) {
-            if (bet.getId().equals(betId)) { // Assuming you're manually managing IDs
+    public UnifiedBettingSystem resolveBet(Long betId, String winningOutcome) {
+        for (UnifiedBettingSystem bet : bets) {
+            if (bet.getId().equals(betId)) {
                 bet.resolveBet(winningOutcome);
                 return bet;
             }
         }
-        return null; // No bet found with the given ID
+        return null;
+    }
+    public UnifiedBettingSystem createCustomBet(String name, String description, UserService userService) {
+        UnifiedBettingSystem newBet = new UnifiedBettingSystem( name, description);
+        newBet.setId(generateUniqueId());
+        System.out.println(userService.toString());
+        newBet.setUserService(userService);
+        bets.add(newBet);
+        return newBet;
+    }
+    private Long generateUniqueId() {
+        return betIdGenerator.incrementAndGet();
     }
 
-    public Bet createBet(Bet bet) {
+
+    public UnifiedBettingSystem getBetById(Long betId) {
+        return bets.stream()
+                .filter(bet -> bet.getId().equals(betId))
+                .findFirst()
+                .orElse(null);
+    }
+
+
+
+    public UnifiedBettingSystem createBet(UnifiedBettingSystem bet) {
         bets.add(bet);
         return bet;
     }
 
-    // Additional methods for updating and deleting bets as needed
+    public void save(UnifiedBettingSystem bet) {
+        bets.add(bet);
+    }
+
 }

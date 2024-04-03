@@ -10,14 +10,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class BettingController {
 
-    private final BettingService bettingService;
-    private final UserService UserService;
+    private UnifiedBettingSystem unifiedBettingSystem;
+    private  UserService UserService;
 
     @Autowired
-    public BettingController(BettingService bettingService, UserService userService) {
-        this.bettingService = bettingService;
+    public BettingController(UnifiedBettingSystem unifiedBettingSystem, UserService userService) {
+        this.unifiedBettingSystem = unifiedBettingSystem;
         UserService = userService;
-        this.bettingService.setUserService(userService);
+        this.unifiedBettingSystem.setUserService(userService);
     }
 
     @GetMapping("/")
@@ -27,25 +27,24 @@ public class BettingController {
             double balance = ((User) session.getAttribute("user")).getBalance();
             System.out.println("Balance: " + balance);
             modelAndView.addObject("balance", balance);
-            double yesPrice = bettingService.getYesPrice();
-            double noPrice = bettingService.getNoPrice();
+            double yesPrice = unifiedBettingSystem.getPrice("YES");
+            double noPrice = unifiedBettingSystem.getPrice("NO");
             modelAndView.addObject("yesPrice", yesPrice);
             modelAndView.addObject("noPrice", noPrice);
             modelAndView.addObject("yesShares", ((User) session.getAttribute("user")).getShares("YES"));
             modelAndView.addObject("noShares", ((User) session.getAttribute("user")).getShares("NO"));
-            modelAndView.addObject("yesLiquidity", bettingService.getYesLiquidity());
-            modelAndView.addObject("noLiquidity", bettingService.getNoLiquidity());
+            modelAndView.addObject("yesLiquidity", unifiedBettingSystem.getYesLiquidity());
+            modelAndView.addObject("noLiquidity", unifiedBettingSystem.getNoLiquidity());
             return modelAndView;
         } else {
-            return new ModelAndView("redirect:/login"); // Redirect to login if not logged in
+            return new ModelAndView("redirect:/login");
         }
     }
 
     @GetMapping("/login")
     public String showLoginForm() {
-        return "login"; // Assuming you have a login.html in your template directory
+        return "login";
     }
-
     @PostMapping("/login")
     public String loginUser(@RequestParam String username, @RequestParam String password, HttpSession session, RedirectAttributes redirectAttributes) {
         User user = UserService.findUserById(username);
@@ -72,7 +71,7 @@ public class BettingController {
         }
 
         try {
-            bettingService.sellShares(user.getId(), outcome, shares);
+            unifiedBettingSystem.sellShares(user.getId(), outcome, shares);
             modelAndView.addObject("message", "Shares sold successfully!");
         } catch (IllegalArgumentException e) {
             modelAndView.addObject("error", e.getMessage());
@@ -106,15 +105,15 @@ public class BettingController {
 
             if ("BUY".equalsIgnoreCase(transactionType)) {
                 if ("yes".equalsIgnoreCase(outcome)) {
-                    bettingService.buyShares(user.getId(), "YES", amount);
+                    unifiedBettingSystem.buyShares(user.getId(), "YES", amount);
                 } else if ("no".equalsIgnoreCase(outcome)) {
-                    bettingService.buyShares(user.getId(), "NO", amount);
+                    unifiedBettingSystem.buyShares(user.getId(), "NO", amount);
                 }
             } else if ("SELL".equalsIgnoreCase(transactionType)) {
                 if ("yes".equalsIgnoreCase(outcome)) {
-                    bettingService.sellShares(user.getId(), "YES", amount);
+                    unifiedBettingSystem.sellShares(user.getId(), "YES", amount);
                 } else if ("no".equalsIgnoreCase(outcome)) {
-                    bettingService.sellShares(user.getId(), "NO", amount);
+                    unifiedBettingSystem.sellShares(user.getId(), "NO", amount);
                 }
             }
 
